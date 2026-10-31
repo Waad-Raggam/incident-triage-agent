@@ -1,0 +1,258 @@
+{
+  "id": "bad-deploy-errors",
+  "description": "A deploy 5 minutes before the alarm makes half of checkouts fail.",
+  "alarm_name": "checkout-api-errors",
+  "fixtures": {
+    "get_alarm": {
+      "name": "checkout-api-errors",
+      "description": "",
+      "state": "ALARM",
+      "reason": "Threshold Crossed: 2 out of the last 3 datapoints [14.0, 12.0] were >= 5.0",
+      "metric": "Errors",
+      "namespace": "AWS/Lambda",
+      "dimensions": {
+        "FunctionName": "checkout-api",
+        "Resource": "checkout-api:live"
+      },
+      "statistic": "Sum",
+      "threshold": 5,
+      "recent_state_changes": [
+        {
+          "at": "2026-10-31T13:05:00Z",
+          "summary": "Alarm updated from OK to ALARM"
+        }
+      ]
+    },
+    "get_metric_series": {
+      "metric": "series",
+      "points": [
+        {
+          "t": "2026-10-31T12:36:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:37:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:38:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:39:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:40:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:41:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:42:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:43:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:44:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:45:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:46:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:47:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:48:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:49:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:50:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:51:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:52:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:53:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:54:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:55:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:56:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:57:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:58:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T12:59:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T13:00:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T13:01:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T13:02:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T13:03:00Z",
+          "v": 0.0
+        },
+        {
+          "t": "2026-10-31T13:04:00Z",
+          "v": 14.0
+        },
+        {
+          "t": "2026-10-31T13:05:00Z",
+          "v": 12.0
+        }
+      ],
+      "summary": {
+        "count": 30,
+        "min": 0.0,
+        "max": 14.0,
+        "median": 0.0,
+        "last": 12.0
+      }
+    },
+    "score_anomaly": {
+      "score": 0.71,
+      "threshold": 0.55,
+      "is_anomaly": true,
+      "model": "robust-zscore"
+    },
+    "query_logs": {
+      "status": "Complete",
+      "rows": [
+        {
+          "@timestamp": "2026-10-31 13:04:50",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        },
+        {
+          "@timestamp": "2026-10-31 13:04:51",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        },
+        {
+          "@timestamp": "2026-10-31 13:04:52",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        },
+        {
+          "@timestamp": "2026-10-31 13:04:53",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        },
+        {
+          "@timestamp": "2026-10-31 13:04:54",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        },
+        {
+          "@timestamp": "2026-10-31 13:04:55",
+          "level": "ERROR",
+          "msg": "payment_failed",
+          "version": "2",
+          "error": "PaymentGatewayError: connection pool exhausted (max=10)"
+        }
+      ],
+      "stats": {}
+    },
+    "get_recent_deploys": {
+      "alias": "live",
+      "alias_points_to": "2",
+      "alias_description": "deploy: payment-client v2.3 (connection pool size change)",
+      "recent_versions": [
+        {
+          "version": "2",
+          "description": "deploy: payment-client v2.3 (connection pool size change)",
+          "published_at": "2026-10-31T13:00:41Z"
+        },
+        {
+          "version": "1",
+          "description": "Demo checkout service. Healthy version.",
+          "published_at": "2026-10-28T09:12:03Z"
+        }
+      ]
+    },
+    "get_feature_flags": {
+      "flags": {
+        "slow_dependency": false
+      },
+      "last_modified": "2026-10-28T09:10:00Z"
+    },
+    "search_past_incidents": {
+      "results": [
+        {
+          "score": 0.71,
+          "source": "s3://kb/incidents/checkout-api/2026-09-12-seed01.md",
+          "incident_id": "2026-09-12-seed01",
+          "text": "Version 14 of checkout-api changed the payment client connection pool from 50 to 10 ... PaymentGatewayError: connection pool exhausted ... Rolled back the live alias from version 14 to 13."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "actionable",
+    "remediation_action": "rollback_deploy",
+    "must_call": [
+      "get_alarm",
+      "query_logs",
+      "get_recent_deploys",
+      "create_incident_ticket",
+      "notify_oncall"
+    ],
+    "root_cause_reference": "Version 2 deployed at 13:00, five minutes before the alarm, exhausts the payment client connection pool (max=10); roll back live alias to version 1."
+  }
+}

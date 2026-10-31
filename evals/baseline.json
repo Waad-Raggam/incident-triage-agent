@@ -1,0 +1,5 @@
+{
+  "average": 0.0,
+  "prompt_version": "triage-v1",
+  "note": "Placeholder. Run `python evals/run_evals.py --update-baseline` once in your account and commit the result."
+}

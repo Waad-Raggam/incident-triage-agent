@@ -1,0 +1,17 @@
+# Infra + local development + tests
+aws-cdk-lib==2.275.0
+aws-cdk.aws-bedrock-agentcore-alpha==2.275.0a0
+constructs>=10.0.0,<11.0.0
+boto3>=1.40
+# Agent (Phase 1 runs it locally)
+strands-agents>=1.63
+bedrock-agentcore>=1.25
+mcp-proxy-for-aws>=1.7
+pydantic>=2.7
+# ML (local training + tests)
+scikit-learn>=1.5
+numpy>=1.26
+pandas>=2.2
+# Dev
+pytest>=8
+ruff>=0.6

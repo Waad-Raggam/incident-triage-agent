@@ -1,0 +1,31 @@
+name: agent-evals
+# Phase 7c: a prompt or agent change that makes triage worse cannot merge.
+on:
+  pull_request:
+    paths: ["agent/**", "evals/**", "lambdas/tools/schema.json"]
+  push:
+    branches: [main]
+    paths: ["agent/**", "evals/**"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # OIDC -> AWS, no stored keys
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements-dev.txt
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Run evals against the baseline
+        run: python evals/run_evals.py ${{ github.ref == 'refs/heads/main' && '--publish-metric' || '' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: eval-results, path: evals/results/}

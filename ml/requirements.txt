@@ -1,0 +1,7 @@
+# For ml/pipeline.py and ml/deploy.py (run from your laptop or GitHub Actions, Python 3.11)
+sagemaker>=2.232,<3
+boto3>=1.40
+# For local training/eval runs
+scikit-learn==1.2.2
+numpy<2
+joblib

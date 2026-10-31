@@ -1,0 +1,25 @@
+name: ml-pipeline
+# Phase 6b: pipeline-as-code. Changing the training code upserts the pipeline and starts a run.
+on:
+  push:
+    branches: [main]
+    paths: ["ml/**"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r ml/requirements.txt
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - run: python ml/pipeline.py --role-arn "${{ vars.SAGEMAKER_ROLE_ARN }}" --bucket "${{ vars.ML_BUCKET }}" --start

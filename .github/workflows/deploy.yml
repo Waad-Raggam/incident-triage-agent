@@ -1,0 +1,29 @@
+name: deploy
+on:
+  workflow_dispatch:
+    inputs:
+      stacks:
+        description: "Stacks to deploy (space separated) or --all"
+        default: "--all"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - uses: actions/setup-node@v4
+        with: {node-version: "20"}
+      - uses: docker/setup-qemu-action@v3   # the agent image is ARM64
+      - uses: docker/setup-buildx-action@v3
+      - run: pip install -r requirements-dev.txt
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - run: npx -y aws-cdk@2 deploy ${{ inputs.stacks }} --require-approval never

@@ -1,0 +1,6 @@
+strands-agents>=1.63
+bedrock-agentcore>=1.25
+mcp-proxy-for-aws>=1.7
+pydantic>=2.7
+boto3>=1.40
+aws-opentelemetry-distro>=0.10

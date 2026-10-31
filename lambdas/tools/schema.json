@@ -1,0 +1,104 @@
+[
+  {
+    "name": "get_alarm",
+    "description": "Get a CloudWatch alarm's current state, reason, metric, dimensions, threshold and recent state changes. Start every triage here.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {"alarm_name": {"type": "string", "description": "Exact alarm name"}},
+      "required": ["alarm_name"]
+    }
+  },
+  {
+    "name": "get_metric_series",
+    "description": "Get 1-minute datapoints for a CloudWatch metric over the last N minutes, plus min/max/median/last.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "namespace": {"type": "string", "description": "e.g. AWS/Lambda"},
+        "metric_name": {"type": "string", "description": "e.g. Errors, Duration, Invocations"},
+        "dimensions": {"type": "object", "description": "Dimension name -> value, copy them from get_alarm"},
+        "stat": {"type": "string", "description": "Sum, Average, Maximum or a percentile like p99"},
+        "minutes": {"type": "integer", "description": "Look-back window, 5-1440. Default 60"}
+      },
+      "required": ["namespace", "metric_name", "dimensions"]
+    }
+  },
+  {
+    "name": "query_logs",
+    "description": "Run a CloudWatch Logs Insights query. With no query it returns the latest WARN/ERROR lines (level, msg, error, version, dependency).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "log_group": {"type": "string", "description": "e.g. /aws/lambda/checkout-api"},
+        "query": {"type": "string", "description": "Optional Logs Insights query"},
+        "minutes": {"type": "integer", "description": "Look-back window, default 30"}
+      },
+      "required": ["log_group"]
+    }
+  },
+  {
+    "name": "get_recent_deploys",
+    "description": "List the most recent published versions of a Lambda function and which version the live alias points to. Use it to check whether a deploy lines up with the incident start.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "function_name": {"type": "string"},
+        "alias": {"type": "string", "description": "Default live"}
+      },
+      "required": ["function_name"]
+    }
+  },
+  {
+    "name": "get_feature_flags",
+    "description": "Read a service's feature flags and when they last changed.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {"service": {"type": "string"}},
+      "required": ["service"]
+    }
+  },
+  {
+    "name": "score_anomaly",
+    "description": "Score whether the latest values of a metric series are a real anomaly versus normal noise. Pass the metric values oldest to newest (at least 6).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {"values": {"type": "array", "items": {"type": "number"}}},
+      "required": ["values"]
+    }
+  },
+  {
+    "name": "search_past_incidents",
+    "description": "Semantic search over past incident summaries and runbooks. Returns the closest matches with their incident IDs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {"type": "string", "description": "Describe the symptoms: alarm, error messages, what changed"},
+        "service": {"type": "string", "description": "Optional service filter"}
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "create_incident_ticket",
+    "description": "Open a ServiceNow incident. Call exactly once, after the diagnosis, with the evidence and suggested fix in the description.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "short_description": {"type": "string"},
+        "description": {"type": "string"},
+        "urgency": {"type": "integer", "description": "1 high, 2 medium, 3 low"},
+        "incident_id": {"type": "string", "description": "Our internal incident ID"}
+      },
+      "required": ["short_description", "description", "incident_id"]
+    }
+  },
+  {
+    "name": "notify_oncall",
+    "description": "Post a short message to the on-call Slack channel. Call once, after the ticket exists, with the ticket number.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {"message": {"type": "string"}},
+      "required": ["message"]
+    }
+  }
+]

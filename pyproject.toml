@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+exclude = ["cdk.out", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B905", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "lambdas/tools", "lambdas/workflow", "lambdas/demo_app", "agent", "ml/train"]
