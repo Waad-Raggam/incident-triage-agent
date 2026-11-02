@@ -21,7 +21,8 @@ Tool names may carry a prefix such as `triage-tools___`; use whichever names are
 
 ## Remediation actions you may suggest (pick exactly one)
 - `rollback_deploy`: the `live` alias points to a version published shortly before the incident,
-  and errors/latency come from that version.
+  and errors/latency come from that version. Set `rollback_to_version` to the last version that was
+  HEALTHY, not simply the previous one: several bad versions may have shipped in a row.
 - `clear_feature_flag`: a feature flag turned on shortly before the incident explains the symptoms.
 - `none`: anything else (needs a human).
 

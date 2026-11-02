@@ -22,6 +22,19 @@ def test_previous_version(versions, current, expected):
     assert remediation.previous_version(versions, current) == expected
 
 
+@pytest.mark.parametrize(("suggested", "expected", "how"), [
+    ("3", "3", "agent"),        # Phase 1a incident: v4 and v5 both bad, v3 healthy
+    ("", "4", "previous"),      # no suggestion -> old behaviour
+    ("5", "4", "previous"),     # not older than current -> rejected
+    ("9", "4", "previous"),     # does not exist -> rejected
+    ("abc", "4", "previous"),   # nonsense -> rejected
+])
+def test_rollback_target_prefers_valid_agent_suggestion(suggested, expected, how):
+    versions = ["$LATEST", "1", "2", "3", "4", "5"]
+    target, chosen_by = remediation.choose_rollback_target(versions, "5", suggested)
+    assert target == expected and chosen_by.startswith(how)
+
+
 def test_only_allow_listed_actions_run():
     with pytest.raises(ValueError):
         remediation.execute("delete_database")

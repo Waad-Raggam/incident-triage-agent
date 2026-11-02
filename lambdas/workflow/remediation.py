@@ -17,18 +17,29 @@ def previous_version(versions: list[str], current: str) -> str | None:
     return str(older[0]) if older else None
 
 
-def rollback_deploy(function_name: str, alias: str = "live") -> dict:
+def choose_rollback_target(versions: list[str], current: str, suggested: str = "") -> tuple[str | None, str]:
+    """Use the agent's suggested healthy version if it is safe, else fall back to the previous version.
+
+    Safe = a published version that exists and is older than the one currently live.
+    Returns (target, how_it_was_chosen).
+    """
+    if suggested and suggested.isdigit() and suggested in versions and int(suggested) < int(current):
+        return suggested, "agent-suggested last healthy version"
+    return previous_version(versions, current), "previous version (no valid suggestion)"
+
+
+def rollback_deploy(function_name: str, alias: str = "live", suggested: str = "") -> dict:
     lam = boto3.client("lambda")
     current = lam.get_alias(FunctionName=function_name, Name=alias)["FunctionVersion"]
     versions = []
     for page in lam.get_paginator("list_versions_by_function").paginate(FunctionName=function_name):
         versions += [v["Version"] for v in page["Versions"]]
-    target = previous_version(versions, current)
+    target, how = choose_rollback_target(versions, current, suggested)
     if not target:
         raise RuntimeError(f"no version older than {current} to roll back to")
     lam.update_alias(FunctionName=function_name, Name=alias, FunctionVersion=target,
                      Description=f"rollback from {current} by incident-triage")
-    return {"action": "rollback_deploy", "from_version": current, "to_version": target}
+    return {"action": "rollback_deploy", "from_version": current, "to_version": target, "chosen_by": how}
 
 
 def clear_feature_flags(param_name: str) -> dict:
@@ -39,10 +50,10 @@ def clear_feature_flags(param_name: str) -> dict:
     return {"action": "clear_feature_flag", "turned_off": turned_off}
 
 
-def execute(action: str) -> dict:
+def execute(action: str, rollback_to_version: str = "") -> dict:
     if action not in ALLOWED_ACTIONS:
         raise ValueError(f"action {action!r} is not allowed")
     service = os.environ["SERVICE_NAME"]
     if action == "rollback_deploy":
-        return rollback_deploy(service)
+        return rollback_deploy(service, suggested=rollback_to_version)
     return clear_feature_flags(os.environ["FLAGS_PARAM"])

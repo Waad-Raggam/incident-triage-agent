@@ -96,7 +96,9 @@ def request_approval(event, _ctx=None):
         short_description=f"[{t['remediation_action']}] {SERVICE}: {t['root_cause'][:100]}",
         description=(f"Incident {inc.get('ticket_number')} ({incident_id})\n\nRoot cause: {t['root_cause']}\n\n"
                      "Evidence:\n" + "\n".join(f"- {e}" for e in t["evidence"]) +
-                     f"\n\nAction if approved: {t['remediation_action']}\nConfidence: {t['confidence']}"),
+                     f"\n\nAction if approved: {t['remediation_action']}"
+                     + (f" to version {t['rollback_to_version']}" if t.get("rollback_to_version") else "")
+                     + f"\nConfidence: {t['confidence']}"),
         incident_sys_id=inc.get("ticket_sys_id", ""), correlation_id=incident_id,
     )
     store.update_incident(incident_id, status="AWAITING_APPROVAL", task_token=token,
@@ -115,7 +117,8 @@ def request_approval(event, _ctx=None):
 def remediate(event, _ctx=None):
     incident_id = event["incident_id"]
     inc = store.get_incident(incident_id)
-    result = remediation.execute(inc["triage"]["remediation_action"])
+    result = remediation.execute(inc["triage"]["remediation_action"],
+                                 inc["triage"].get("rollback_to_version", ""))
     store.update_incident(incident_id, status="REMEDIATING", remediation_result=result,
                           remediated_at=store.now_iso())
     if inc.get("ticket_sys_id"):
