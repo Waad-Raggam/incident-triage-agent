@@ -42,6 +42,8 @@ class ServiceNow:
     def __init__(self, secret_name: str | None = None):
         s = get_secret(secret_name or os.environ.get("SERVICENOW_SECRET", "incident-triage/servicenow"))
         self.base = s["instance_url"].rstrip("/")
+        self.username = s["username"]
+        self._my_sys_id: str | None = None
         token = base64.b64encode(f"{s['username']}:{s['password']}".encode()).decode()
         self.headers = {"Authorization": f"Basic {token}", "Accept": "application/json",
                         "Content-Type": "application/json"}
@@ -53,6 +55,14 @@ class ServiceNow:
             url += "?" + urllib.parse.urlencode(query)
         return _http(method, url, self.headers, body)["result"]
 
+    def my_sys_id(self) -> str:
+        """sys_id of the integration user we log in as (cached). Used as the incident caller."""
+        if self._my_sys_id is None:
+            rows = self._table("GET", "sys_user", query={"sysparm_query": f"user_name={self.username}",
+                                                         "sysparm_fields": "sys_id", "sysparm_limit": 1})
+            self._my_sys_id = rows[0]["sys_id"] if rows else ""
+        return self._my_sys_id
+
     def create_incident(self, short_description: str, description: str, urgency: int = 2,
                         correlation_id: str = "") -> dict:
         r = self._table("POST", "incident", body={
@@ -62,7 +72,7 @@ class ServiceNow:
             "impact": str(urgency),
             "category": "software",
             "correlation_id": correlation_id,
-            "caller_id": "",
+            "caller_id": self.my_sys_id(),  # required field in the UI: the agent opens it as itself
         })
         return {"number": r["number"], "sys_id": r["sys_id"], "url": self.link("incident", r["sys_id"])}
 
