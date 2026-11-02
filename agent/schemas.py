@@ -14,6 +14,8 @@ class TriageResult(BaseModel):
     similar_incidents: list[str] = Field(default_factory=list, description="Past incident IDs that matched")
     suggested_fix: str = Field(description="What a human should do, in one sentence")
     remediation_action: RemediationAction
+    rollback_to_version: str = Field(
+        default="", description="For rollback_deploy: the last known HEALTHY version number, e.g. '3'")
     confidence: float = Field(ge=0, le=1)
     ticket_number: str = Field(default="", description="ServiceNow incident number, e.g. INC0010001")
     ticket_sys_id: str = Field(default="", description="ServiceNow sys_id of the incident")
